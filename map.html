@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>호치민 문학지도</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif; }
+    #map { height: 100vh; }
+    .legend {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      max-width: 320px;
+      z-index: 999;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .legend h1 { font-size: 14px; margin: 0 0 6px; }
+    .legend .sub { color: #444; }
+    .legend .hint { margin-top: 6px; color: #555; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div class="legend">
+    <h1>베트남 전쟁 문학 지도 (호치민)</h1>
+    <div class="sub">전쟁 이전–전쟁–현재가 1군 일대에 밀집하는 패턴을 시각화</div>
+    <div class="hint">• 마커 클릭 → 설명 팝업<br/>• 구찌터널은 시내와 떨어져 별도 지점으로 표시</div>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    // 초기 화면: 1군 중심부 (대략)
+    const map = L.map("map").setView([10.7765, 106.7009], 13);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors",
+    }).addTo(map);
+
+    const places = [
+      { name: "떤딘 성당", lat: 10.789179035435565, lng: 106.69024974523248, note: "식민지 시기 종교 건축의 흔적이 현재의 관광/일상과 공존" },
+      { name: "호치민 전쟁유적박물관", lat: 10.77986225762814, lng: 106.6918805281975, note: "전쟁을 '개인/민간인 피해'의 층위로 마주하게 하는 기록 공간" },
+      { name: "통일궁", lat: 10.777922982477634, lng: 106.69531375587702, note: "전쟁 종결의 상징이면서도 현재는 스냅사진 명소로 재맥락화" },
+      { name: "호치민 오페라하우스", lat: 10.777206290692785, lng: 106.70303851729031, note: "프랑스 식민지 시기의 문화 공간 → 현재의 '핫플'로 의미 확장" },
+      { name: "사이공 중앙우체국", lat: 10.780368153200673, lng: 106.69990569807389, note: "식민지 행정/소통 인프라의 흔적이 관광 공간으로 전환" },
+      { name: "노트르담 대성당(호치민)", lat: 10.779967652432273, lng: 106.69891864522664, note: "식민지 흔적이 남아 있는 대표 랜드마크, 현재는 관광 밀집지" },
+      { name: "호치민 인민위원회청사", lat: 10.776911181645337, lng: 106.70084983557996, note: "식민지 양식의 건축이 현재 행정 기능과 결합된 공간" },
+      { name: "9/23 공원", lat: 10.768964212296902, lng: 106.6923740552547, note: "전쟁 이후 세대의 일상이 흐르는 도심 공원(현재성의 지점)" },
+      { name: "벤탄시장", lat: 10.773116898814063, lng: 106.69806033825333, note: "전쟁 전후를 관통하는 일상의 장소이자 관광/상업의 중심" },
+      { name: "구찌터널(투어)", lat: 11.141961741014637, lng: 106.46168277261566, note: "전쟁 수행 환경이 '현장'으로 남아 있는 체험 공간(시내와 거리감 큼)" },
+    ];
+
+    const markers = [];
+    for (const p of places) {
+      const m = L.marker([p.lat, p.lng]).addTo(map);
+      m.bindPopup(
+        `<div style="font-size:13px;line-height:1.35">
+           <div style="font-weight:700;margin-bottom:4px">${p.name}</div>
+           <div>${p.note}</div>
+           <div style="margin-top:6px;color:#666">(${p.lat.toFixed(6)}, ${p.lng.toFixed(6)})</div>
+         </div>`
+      );
+      markers.push(m);
+    }
+
+    // 전체 마커가 한 화면에 들어오도록 자동 맞춤
+    const group = L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.15));
+  </script>
+</body>
+</html>
